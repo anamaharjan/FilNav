@@ -23,7 +23,9 @@
         algolia_object.miner_id=full_document.miner_id;
 
         if(full_document.names){algolia_object.names = full_document.names;}
-
+      
+        if(full_document.tags){algolia_object.tags = full_document.tags;}
+        if(full_document.images){algolia_object.images = full_document.images;}
 
         try{
         const result = await index.saveObject(algolia_object);
