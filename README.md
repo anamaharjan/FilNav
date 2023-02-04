@@ -13,4 +13,4 @@ Oracle: ChainLink\
 Compute: Google Cloud Functions, Bacalhau (just testing)\
 Data Storage: IPFS/Filecoin, MongoDB\
 No-Code Tools: Retool (front-end)\
-Design: Adobe Illustrator (logo)\
+Design: Adobe Illustrator (logo)
