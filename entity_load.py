@@ -44,9 +44,140 @@ def LOCALpubsub(topic_name,message):
 
     print(response.text)
 
+#%%
+def fancyString(raw):
+    print("RAW",raw)
+    if type(raw)!=list:
+        s_list=[raw]
+    else:
+        s_list=copy.deepcopy(raw)
+    s_final=""
+    for s in s_list:  
+        words = s.split("_")
+        first_word=words[0].capitalize()
+        if len(words)>1:
+            first_word=first_word+" "
+        cap = first_word + " ".join(map(lambda x:x.capitalize(),words[1:]))
+        if s_final=="":
+            s_final=copy.deepcopy(cap)
+        else:
+            s_final=s_final+", "+copy.deepcopy(cap)
+    return s_final
+
+def entityContributions(fide_id):
+    contributions_final={}
+    other_doc_keys=['fide_id','names','type','images']
+    
+    conts_to=m_db["entity_db"]["contributions"].find({"from.document.fide_id":fide_id,"from.collection":"entities"})
+    experience=[]
+    for cont_to in conts_to:
+        doc_filter={}
+        if cont_to['to']['document'].get('_id'):
+            doc_filter['_id']=ObjectId(cont_to['to']['document']['_id'])
+        elif cont_to['to']['document'].get('fide_id'):
+            doc_filter['fide_id']=cont_to['to']['document']['fide_id']
+            
+        other_doc=m_db['entity_db']['entities'].find_one(doc_filter)
+        if other_doc.get('links') and other_doc.get('names')==None:# if time_update is old?
+            if other_doc['links'].get('messari') or other_doc['links'].get('twitter'):
+                #might need to check entity
+                pass
+        
+        elif other_doc:
+            other_doc_final={}
+            for key in other_doc_keys:
+                if other_doc.get(key):
+                    other_doc_final[key]=other_doc[key]
+            
+            if cont_to.get('tags'):
+                if cont_to['tags'].get('roles'):
+                    other_doc_final['roles']=fancyString(cont_to['tags']['roles'])
+            
+            if cont_to.get('times'):
+                other_doc_final['times']=cont_to['times']
+
+                
+            experience.append(other_doc_final)
+    if experience!=[]:
+        contributions_final['experience']=experience
+    
+    conts_from=m_db["entity_db"]["contributions"].find({"to.document.fide_id":fide_id,"to.collection":"entities","tags.roles":"team_member"})
+    family=[]
+    team=[]
+    for cont_from in conts_from:
+        doc_filter={}
+        if cont_from['from']['document'].get('_id'):
+            doc_filter['_id']=ObjectId(cont_from['from']['document']['_id'])
+        elif cont_from['from']['document'].get('fide_id'):
+            doc_filter['fide_id']=cont_from['from']['document']['fide_id']
+            
+        other_doc=m_db['entity_db']['entities'].find_one(doc_filter)
+        if other_doc.get('links') and other_doc.get('names')==None:# if time_update is old?
+            if other_doc['links'].get('messari') or other_doc['links'].get('twitter'):
+                #might need to check entity
+                pass
+        
+        elif other_doc:
+            if other_doc.get('type') in ['project','organization']:
+                family_doc_final={}
+                for key in other_doc_keys:
+                    if other_doc.get(key):
+                        family_doc_final[key]=other_doc[key]
+               
+                if cont_from.get('tags'):
+                    if cont_from['tags'].get('roles'):
+                        family_doc_final['roles']=fancyString(cont_from['tags']['roles'])
+                
+                if cont_from.get('times'):
+                    family_doc_final['times']=cont_from['times']
+                
+                family.append(family_doc_final)
+                
+            else:
+                team_doc_final={}
+                for key in other_doc_keys:
+                    if other_doc.get(key):
+                        team_doc_final[key]=other_doc[key]
+                
+                if cont_from.get('tags'):
+                    if cont_from['tags'].get('roles'):
+                        team_doc_final['roles']=fancyString(cont_from['tags']['roles'])
+                
+                if cont_from.get('times'):
+                    team_doc_final['times']=cont_from['times']
+                    
+                team.append(team_doc_final)
+            
+    if team!=[]:
+        contributions_final['team']=team
+    if family!=[]:
+        contributions_final['family']=family
+        
+        
+    locations_from=m_db["entity_db"]["contributions"].find({"from.document.fide_id":fide_id,"from.collection":"source","from.document.type":"location"})
+
+    locations=[]  
+    for location in locations_from:
+        other_doc=m_db['entity_db']['sources'].find_one({"_id":ObjectId(location['from']['document']['_id'])})
+        if other_doc:
+            other_doc_final={}
+            for key in other_doc_keys:
+                if other_doc.get(key):
+                    other_doc_final[key]=other_doc[key]
+            locations.append(other_doc_final)
+    if locations!=[]:
+        contributions_final['locations']=locations
+    
+    return contributions_final
+
 def fullEntity(fide_id):
     entity_final=m_db["entity_db"]["entities"].find_one({"fide_id":fide_id})
-    
+    if entity_final.get('tags'):
+        tags_dict={}
+        for tag_key in entity_final['tags']:
+            tags_dict[tag_key]=fancyString(entity_final['tags'][tag_key])
+            
+        entity_final['tags']=tags_dict
     
     if entity_final.get('times'):
         entity_time=entity_final['times']
@@ -64,6 +195,9 @@ def fullEntity(fide_id):
         elif team_size.get('count'):
             team_size['range_str']=str(team_size.get('count'))+" people"
         entity_final['team_size']=team_size
+    
+    entity_contributions=entityContributions(fide_id)
+    entity_final['contributions']=entity_contributions#removed if statement
     
     del entity_final['_id']
     del entity_final['time_updated']
