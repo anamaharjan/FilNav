@@ -8,6 +8,7 @@ Find and compare the best decentralized storage providers on the Filecoin networ
 # Tech Stack (so far)
 Languages: Solidity, Python, JavaScript\
 Oracle: ChainLink\
+Compute: Google Cloud Functions, Bacalhau (just testing)\
 Data Storage: IPFS/Filecoin, MongoDB\
 No-Code Tools: Retool (front-end)\
 Design: Adobe Illustrator (logo)\
