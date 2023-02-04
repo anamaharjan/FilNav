@@ -7,7 +7,7 @@ def publish(request):
     request_json = request.get_json(silent=True)
     func_name = request_json.get("topic")
     message = request_json.get("message")
-    if not topic_name or not message:
+    if not func_name or not message:
         return ('Missing "function" and/or "message" parameter.', 400)
     print(f'Publishing message to function {func_name}')
     func_path = publisher.topic_path("$GOOGLE_PROJECT_ID", func_name)
