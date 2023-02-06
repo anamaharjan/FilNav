@@ -41,8 +41,11 @@ def sourceRequest(source_name,query,identifier):
       },
       'filplus':{
         'notary-leaderboard':{'query_1':'pageProps','query_2':'verifiers','url':'https://filplus.dev/_next/data/DZ9ATGOKHOhdOg6_sy4d1/index.json','headers':{'accept': '*'},'method':'GET','payload':{}}
-      }
-        
+      },
+       'twitter':{
+        'screen-name':{'url':f"https://api.twitter.com/1.1/users/show.json?screen_name={identifier}",'headers':{'Content-Type': 'application/json','Authorization':'Bearer $API-KEY'},'method':'GET'},
+       
+        },
 
       }
       
