@@ -46,6 +46,9 @@ def sourceRequest(source_name,query,identifier):
         'screen-name':{'url':f"https://api.twitter.com/1.1/users/show.json?screen_name={identifier}",'headers':{'Content-Type': 'application/json','Authorization':'Bearer $API-KEY'},'method':'GET'},
        
         },
+    'messari':{
+          'dao':{'query_1':'data','query_2':'governanceBySlug','url':"https://graphql.messari.io/query",'method':'POST','headers':{'content-type': 'application/json'},'payload':{"operationName":"getGovernanceBySlug","variables":{"slug":identifier},"query":"query getGovernanceBySlug($slug: String!) {\n  governanceBySlug(slug: $slug) {\n    __typename\n    id\n    name\n    slug\n    details\n    logoUrl\n    structure\n    tags\n    type\n    links {\n      link\n      name\n      __typename\n    }\n    asset {\n      id\n      name\n      slug\n      symbol\n      logo\n      metrics {\n        id\n        pricing {\n          id\n          price\n          __typename\n        }\n        marketcap {\n          id\n          reported\n          __typename\n        }\n        returnOnInvestment {\n          id\n          change(span: ONE_DAY)\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    propositionStatusMetrics {\n      id\n      totalCount\n      __typename\n    }\n    process {\n      details\n      phases {\n        order\n        name\n        details\n        __typename\n      }\n      __typename\n    }\n     governingBodies {\n      id\n      name\n      details\n      logoUrl\n      children {  name  id details      __typename children {  name  id details      __typename children {  name  id details      __typename }} }  tools {\n        id\n        url\n        tool {\n          id\n          name\n          description\n          logoUrl\n          types\n          tags\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n  }\n}\n"}},
+          },
 
       }
       
