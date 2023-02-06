@@ -38,6 +38,9 @@ def sourceRequest(source_name,query,identifier):
       },
       'filswan':{
         'miner':{'query_1':'data','query_2':'miner','url':f"https://api.filswan.com/miners/{identifier}",'headers':{},'method':'GET'}
+      },
+      'filplus':{
+        'notary-leaderboard':{'query_1':'pageProps','query_2':'verifiers','url':'https://filplus.dev/_next/data/DZ9ATGOKHOhdOg6_sy4d1/index.json','headers':{'accept': '*'},'method':'GET','payload':{}}
       }
         
 
